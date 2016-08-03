@@ -74,6 +74,11 @@ describe("CSV", function() {
           actual = "123,456\r\n,\r\n";
       assert.deepEqual(expected, new CSV(actual, { cast: [customFunc, "String"] }).parse());
     });
+    it("should expose saved position", function () {
+      var csv = new CSV("1,2\r\n3,\"4"); // incomplete last line
+      csv.parse();
+      assert.equal(5, csv.linePosition);
+    });
   });
 
   describe("#encode()", function() {

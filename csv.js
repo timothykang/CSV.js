@@ -146,7 +146,7 @@
       }
 
       this.data = data;
-
+      this.linePosition = 0;
       this.options = {
         header: fallback(options.header, false),
         cast: fallback(options.cast, true)
@@ -275,7 +275,7 @@
             _c = _i + 1;
           } else if (_ch == lineDelimiter) {
             saveLastCell(current.cell + data.slice(_c, _i));
-            _c = _i + 1;
+            this.linePosition = _c = _i + 1;
             if (current.line.length > 1 || current.line[0] !== "") {
               saveLine();
             }
