@@ -193,7 +193,7 @@
       var data = this.data,
           options = this.options,
           header = options.header,
-          current = { cell: '', line: [] },
+          line = [],
           deserialize = this.deserialize,
           flag, record, response;
 
@@ -207,16 +207,12 @@
       function resetFlags() {
         flag = { escaped: false, quote: false, cell: true };
       }
-      function resetCell() {
-        current.cell = '';
-      }
       function resetLine() {
-        current.line = [];
+        line = [];
       }
 
       function saveCell(cell) {
-        current.line.push(flag.escaped ? cell.slice(1, -1).replace(/""/g, '"') : cell);
-        resetCell();
+        line.push(flag.escaped ? cell.slice(1, -1).replace(/""/g, '"') : cell);
         resetFlags();
       }
       function saveLastCell(cell) {
@@ -225,20 +221,20 @@
       function saveLine() {
         if (header) {
           if (isArray(header)) {
-            record = buildConstructor(deserialize, options.cast, current.line, header);
+            record = buildConstructor(deserialize, options.cast, line, header);
             saveLine = function() {
-              invoke(callback, record, current.line, deserialize, options.cast);
+              invoke(callback, record, line, deserialize, options.cast);
             };
             saveLine();
           } else {
-            header = current.line;
+            header = line;
           }
         } else {
           if (!record) {
-            record = buildConstructor(deserialize, options.cast, current.line);
+            record = buildConstructor(deserialize, options.cast, line);
           }
           saveLine = function() {
-            invoke(callback, record, current.line, deserialize, options.cast);
+            invoke(callback, record, line, deserialize, options.cast);
           };
           saveLine();
         }
@@ -271,12 +267,12 @@
 
         if ((flag.escaped && flag.quote) || !flag.escaped) {
           if (_ch == cellDelimiter) {
-            saveCell(current.cell + data.slice(_c, _i));
+            saveCell(data.slice(_c, _i));
             _c = _i + 1;
           } else if (_ch == lineDelimiter) {
-            saveLastCell(current.cell + data.slice(_c, _i));
+            saveLastCell(data.slice(_c, _i));
             this.linePosition = _c = _i + 1;
-            if (current.line.length > 1 || current.line[0] !== "") {
+            if (line.length > 1 || line[0] !== "") {
               saveLine();
             }
             resetLine();
