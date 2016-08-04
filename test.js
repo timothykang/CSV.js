@@ -63,14 +63,13 @@ describe("CSV", function() {
       assert.ok(deepEqual(expected, new CSV(actual, { header: true, cast: ["String", "Number", "String"] }).parse(), {strict: true}));
     });
     it("should parse with cast", function() {
-      var expected = [["123", 456], ["", 0]],
+      var expected = [["123", 456], ["null", 0]],
           actual = "123,456\r\n,\r\n";
       assert.deepEqual(expected, new CSV(actual, { cast: ["String", "Number"] }).parse());
     });
     it("should parse with custom cast", function() {
-      var customFunc = function(val) { return val === '' ? null : String(val); },
-          options = { cast: [customFunc, customFunc] },
-          expected = [["123", "456"], [null, ""]],
+      var customFunc = function(val) { return val === null ? '' : String(val); },
+          expected = [["123", "456"], ["", "null"]],
           actual = "123,456\r\n,\r\n";
       assert.deepEqual(expected, new CSV(actual, { cast: [customFunc, "String"] }).parse());
     });

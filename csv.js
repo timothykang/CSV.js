@@ -212,7 +212,12 @@
       }
 
       function saveCell(cell) {
-        line.push(flag.escaped ? cell.slice(1, -1).replace(/""/g, '"') : cell);
+        if (cell === "") {
+          cell = null;
+        } else if (flag.escaped) {
+          cell = cell.slice(1, -1).replace(/""/g, '"');
+        }
+        line.push(cell);
         resetFlags();
       }
       function saveLastCell(cell) {
